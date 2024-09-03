@@ -1,0 +1,116 @@
+-- Code your testbench here
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+entity tb_Sequence_Detector is
+	--Testbench hat keine Ports
+end tb_Sequence_Detector;
+
+architecture Behavioral of tb_Sequence_Detector is
+
+	--Signaldeklarationen für die zu testende Einheit
+    signal clk : std_logic := '0';
+    signal reset : std_logic := '0';
+    signal seq_in : std_logic;
+    signal detected : std_logic;
+    
+    --Instanziierung der zu testenden Einheit DUT
+    component Sequence_Detector
+    	Port(
+        	clk : in std_logic;
+            reset : in std_logic;
+            seq_in : in std_logic;
+            detected : out std_logic
+            );
+    end component;
+
+begin
+
+	--Instanziierung des Sequenzdetektors
+    uut : Sequence_Detector
+    	Port map (
+        	clk => clk,
+            reset => reset,
+            seq_in => seq_in,
+            detected => detected
+            );
+            
+    --Taktprocess (50MHz)
+    clk_process : process
+    begin
+    	clk <= '0';
+        wait for 10 ns;
+        clk <= '1';
+        wait for 10 ns;
+     end process;
+
+	--Stimulusprocess: Test der Eingangssequenzen
+    stimulus_process : process
+    begin
+    	--Reset
+        reset <= '1';
+        wait for 20ns;
+        reset <= '0';
+        wait for 20ns;
+        
+        --Testfall 1: Sequenz 1011
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        
+        --Testfall 2: Falsche Sequenz 0010
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        
+        --Testfall 3: Sequenz 1011
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        
+        --Testfall 4: Sequenz 101101
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        
+         --Testfall 5: Reset und Sequenz 10
+        reset <= '1';
+        wait for 20ns;
+        reset <= '0';
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        
+        --Test beendet
+        wait;
+    end process;
+    
+end Behavioral;
+      
