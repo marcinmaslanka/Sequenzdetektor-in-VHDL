@@ -1,8 +1,5 @@
--- Code your Design here
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity Sequence_Detector is
 Port (
@@ -37,11 +34,12 @@ begin
   
 	--Standardwerte setzen  
   	next_state <= current_state;
-    detected <= '0';
+   detected <= '0';
   
     case current_state is
       when S0 =>
       	if seq_in = '1' then
+			 --detected <= '1';
           next_state <= S1;
       	else
           next_state <= S0;
@@ -49,6 +47,7 @@ begin
       
       when S1 =>
       	if seq_in = '0' then
+			 --detected <= '1';
           next_state <= S2;
       	else
           next_state <= S1;
@@ -56,6 +55,7 @@ begin
       
       when S2 =>
       	if seq_in = '1' then
+			 --detected <= '1';
           next_state <= S3;
       	else
           next_state <= S0;
@@ -63,6 +63,7 @@ begin
       
       when S3 =>
       	if seq_in = '1' then
+			 --detected <= '1';
           next_state <= S4;
       	else
           next_state <= S1;
@@ -70,11 +71,7 @@ begin
       
       when S4 =>
       	detected <= '1';	--Sequenz "1011" erkannt
-      	if seq_in = '1' then
-          next_state <= S1;
-      	else
-          next_state <= S0;
-      end if;
+			next_state <= S0;
       
       when others =>
       	next_state <= S0;	--Fehlerbehandlung: Zurück zum Start
