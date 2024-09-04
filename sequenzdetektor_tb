@@ -1,116 +1,124 @@
--- Code your testbench here
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
-entity tb_Sequence_Detector is
-	--Testbench hat keine Ports
-end tb_Sequence_Detector;
-
-architecture Behavioral of tb_Sequence_Detector is
-
-	--Signaldeklarationen für die zu testende Einheit
-    signal clk : std_logic := '0';
-    signal reset : std_logic := '0';
-    signal seq_in : std_logic;
-    signal detected : std_logic;
+ENTITY Sequenzdetektor_tb IS
+END Sequenzdetektor_tb;
+ 
+ARCHITECTURE behavior OF Sequenzdetektor_tb IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+ 
+    COMPONENT Sequence_Detector
+    PORT(
+         clk : IN  std_logic;
+         reset : IN  std_logic;
+         seq_in : IN  std_logic;
+         detected : OUT  std_logic
+        );
+    END COMPONENT;
     
-    --Instanziierung der zu testenden Einheit DUT
-    component Sequence_Detector
-    	Port(
-        	clk : in std_logic;
-            reset : in std_logic;
-            seq_in : in std_logic;
-            detected : out std_logic
-            );
-    end component;
 
-begin
+   --Inputs
+   signal clk : std_logic := '0';
+   signal reset : std_logic := '0';
+   signal seq_in : std_logic := '0';
 
-	--Instanziierung des Sequenzdetektors
-    uut : Sequence_Detector
-    	Port map (
-        	clk => clk,
-            reset => reset,
-            seq_in => seq_in,
-            detected => detected
-            );
-            
-    --Taktprocess (50MHz)
-    clk_process : process
-    begin
-    	clk <= '0';
-        wait for 10 ns;
-        clk <= '1';
-        wait for 10 ns;
-     end process;
+ 	--Outputs
+   signal detected : std_logic;
 
-	--Stimulusprocess: Test der Eingangssequenzen
-    stimulus_process : process
-    begin
-    	--Reset
+   -- Clock period definitions
+   constant clk_period : time := 10 ns;
+ 
+BEGIN
+ 
+	-- Instantiate the Unit Under Test (UUT)
+   uut: Sequence_Detector PORT MAP (
+          clk => clk,
+          reset => reset,
+          seq_in => seq_in,
+          detected => detected
+        );
+
+   -- Clock process definitions
+   clk_process :process
+   begin
+		clk <= '0';
+		wait for 10ns;
+		clk <= '1';
+		wait for 10ns;
+   end process;
+ 
+
+   -- Stimulus process
+   stim_proc: process
+   begin		
+      -- hold reset state for 100 ns.
+      --reset <= '1';
+		--wait for 20ns;
+		--reset <= '0';
+		--wait for 20ns;
+
+      -- insert stimulus here 
+		
+		--Testfall 1: Sequenz 1011
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+		  
+		--Testfall 2: Falsche Sequenz 0010
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+		  
+		--Testfall 3: Sequenz 1011
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+		  
+		--Testfall 4: Sequenz 101101
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+		  seq_in <= '0';
+        wait for 20ns;
+        seq_in <= '1';
+        wait for 20ns;
+		  
+		--Testfall 5: Reset + Sequenz 10
         reset <= '1';
-        wait for 20ns;
-        reset <= '0';
-        wait for 20ns;
-        
-        --Testfall 1: Sequenz 1011
-        seq_in <= '1';
+		  wait for 20ns;
+		  reset <= '0';
+		  wait for 20ns;
+		  seq_in <= '1';
         wait for 20ns;
         seq_in <= '0';
         wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        
-        --Testfall 2: Falsche Sequenz 0010
-        seq_in <= '0';
-        wait for 20ns;
-        seq_in <= '0';
-        wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '0';
-        wait for 20ns;
-        
-        --Testfall 3: Sequenz 1011
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '0';
-        wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        
-        --Testfall 4: Sequenz 101101
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '0';
-        wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '0';
-        wait for 20ns;
-        seq_in <= '1';
-        wait for 20ns;
-        
-         --Testfall 5: Reset und Sequenz 10
-        reset <= '1';
-        wait for 20ns;
-        reset <= '0';
-        seq_in <= '1';
-        wait for 20ns;
-        seq_in <= '0';
-        wait for 20ns;
+
+       
         
         --Test beendet
-        wait;
-    end process;
-    
-end Behavioral;
-      
+
+      --wait;
+   end process;
+
+END;
