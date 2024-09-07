@@ -1,0 +1,138 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.numeric_std.all;
+
+entity BCD_Sequence_Detector is
+Port (
+  	clk : in std_logic;
+  	reset : in std_logic;
+  	bcd_in : in std_logic_vector(3 downto 0);
+	start_serial : in std_logic;
+  	detected : out std_logic;
+	serial_out : out std_logic			--Serieler Ausgang
+	);
+end BCD_Sequence_Detector;
+
+architecture Behavioral of BCD_Sequence_Detector is
+	
+    -- Definition der Zustände der Zustandsmaschine
+		type state_type is (S0,S1,S2,S3,S4,SEND);
+		signal current_state, next_state : state_type;
+		
+		--signal bit_counter : unsigned(2 downto 0) := (others => '0');			--Serieller Ausgang
+		signal bit_counter : integer range 0 to 3 := 0;
+		signal shift_register : std_logic_vector(3 downto 0);						--4-Bit Zaehle
+		signal sending : std_logic := '0';
+		
+		--Timer
+		signal timer_active : std_logic := '0';
+		signal timer_counter : integer := 0;
+		constant clock_frequency : integer := 1000000;
+		constant pause_duration : integer := 10*clock_frequency; 		--10 sekunden
+
+begin
+  
+  --Zustandsübergangsprocess (synchron mit dem Takt)
+  process(clk, reset)
+  begin
+    if reset = '1' then
+      current_state <= S0;
+		bit_counter <= 0;
+		shift_register <= (others => '0');
+		sending <= '0';
+		timer_active <= '0';
+		timer_counter <= 0;
+    elsif rising_edge(clk) then
+    	current_state <= next_state;
+		
+			--Timer-Logik
+			if timer_active = '1' then
+				if timer_counter < pause_duration then
+					timer_counter <= timer_counter +1;
+				else
+					timer_active <= '0';
+					timer_counter <= 0;
+				end if;
+			end if;			
+  	end if;
+	
+  --end process;
+  
+  --Nächster Zusatnd und Ausgabelogik (kombinatorisch)
+  --process(current_state, bcd_in)
+  --begin
+  
+	--Standardwerte setzen  
+  	--next_state <= current_state;
+   --detected <= '0';
+  
+    case current_state is
+      when S0 =>
+      	if bcd_in = "0011" then
+			 next_state <= S1;
+      	else
+          next_state <= S0;
+      	end if;
+      
+      when S1 =>
+      	if bcd_in = "0010" then
+			 next_state <= S2;
+      	else
+          next_state <= S0;
+      end if;
+      
+      when S2 =>
+      	if bcd_in = "0001" then
+			 next_state <= S3;
+      	else
+          next_state <= S0;
+      end if;
+      
+      when S3 =>
+      	if bcd_in = "0000" then
+			 next_state <= S4;
+      	else
+          next_state <= S0;
+      end if;
+      
+      when S4 =>
+      	--detected <= '1';							--Sequenz 3210 erkannt
+			
+			if timer_active = '0' then
+				timer_active <= '1';
+			end if;
+			
+			if timer_counter < pause_duration then
+				detected <= '0';
+			else
+				detected <= '1';
+			end if;
+			
+			next_state <= S0;
+			
+      when others =>
+      	next_state <= S0;							--Fehlerbehandlung: Zurück zum Start
+      
+		end case;
+		
+		--Serielle Ausgabe
+			if start_serial = '1' and sending = '0' then
+				shift_register <= bcd_in;
+				sending <= '1';
+			end if;
+			
+			if sending = '1' then
+				serial_out <= shift_register(0);
+				shift_register <= '0' & shift_register(3 downto 1);
+				
+			if bit_counter = 3 then
+				bit_counter <= 0;				
+				sending <= '0';
+			else
+				bit_counter <= bit_counter + 1;
+			end if;
+			end if;
+		
+	end process;
+
+end Behavioral;
