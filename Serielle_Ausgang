@@ -14,7 +14,8 @@ end Serial_Output;
 
 architecture Behavioral of Serial_Output is
 		
-		signal bit_counter : unsigned(2 downto 0) := (others => '0');			--Serieller Ausgang
+		--signal bit_counter : unsigned(2 downto 0) := (others => '0');			--Serieller Ausgang
+		signal bit_counter : integer range 0 to 3 := 0;
 		signal shift_register : std_logic_vector(3 downto 0);						--4-Bit Zaehler
 		signal sending : std_logic := '0';
 
@@ -24,7 +25,8 @@ begin
   process(clk, reset)
   begin
     if reset = '1' then
-		bit_counter <= (others => '0');
+		--bit_counter <= (others => '0');
+		bit_counter <= 0;
 		shift_register <= (others => '0');
 		serial_out <= '0';
 		sending <= '0';
@@ -40,8 +42,8 @@ begin
 				
 				shift_register <= '0' & shift_register(3 downto 1);
 				
-				if bit_counter = "011" then
-					bit_counter <= (others => '0');
+				if bit_counter = 3 then
+					bit_counter <= 0;
 					sending <= '0';
 				else
 					bit_counter <= bit_counter + 1;
