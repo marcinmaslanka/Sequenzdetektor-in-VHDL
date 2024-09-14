@@ -22,12 +22,13 @@ architecture Behavioral of Sequence_Detector is
 	signal timer_active : std_logic := '0';
 	signal timer_counter : integer := 0;
 
-	signal serial_seq : std_logic_vector(3 downto 0) := "0000";
+	signal serial_seq : std_logic_vector(11 downto 0) := "000000000000";
 	signal serial_index : integer := 0;
 	signal sequence_detected : std_logic := '0';
 	signal detected_flag : std_logic := '0';
 
-   constant pause_duration : integer := 200/10;
+   constant clock_frequency : integer := 10;							--10Hz
+	constant pause_duration : integer := 10 * clock_frequency;	--10 sek
 
 --Funktion für die Zustandsmaschine
 function state_transition(bcd_in : std_logic_vector(3 downto 0); current_state : state_type) return state_type is
@@ -101,7 +102,7 @@ begin
 			timer_counter <= 0;
 			serial_index <= 0;
 			serial_out <= '0';
-			serial_seq <= "0000";
+			serial_seq <= "000000000000";
 		elsif rising_edge(clk) then
 			
 			--Sequenzdetektion
@@ -111,7 +112,7 @@ begin
 				timer_active <= '1';
 				timer_counter <= 0;
 				serial_index <= 0;
-				serial_seq <= "1011";
+				serial_seq <= "110010001010";
 			else
 				detected_flag <= '0';
 			end if;
@@ -128,7 +129,7 @@ begin
 			
 			--Serielle Ausgabe Process
 			if timer_active = '1' then
-				if serial_index < 4 then
+				if serial_index < 12 then
 					serial_out <= serial_seq(serial_index);
 					serial_index <= serial_index +1;
 				else
