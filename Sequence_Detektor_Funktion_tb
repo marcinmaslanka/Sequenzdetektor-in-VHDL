@@ -1,0 +1,43 @@
+   -- Stimulus process
+   stim_proc: process
+   begin		
+      -- hold reset state for 100 ns.
+      -- insert stimulus here 
+		
+		reset <= '1';
+		wait for 20ns;
+		reset <= '0';
+		wait for 20ns;
+		
+		--Sequence 1011
+		bcd_in <= '1';
+		wait for clk_period;
+		bcd_in <= '0';
+		wait for clk_period;
+		bcd_in <= '1';
+		wait for clk_period;
+		bcd_in <= '1';
+		wait for clk_period;
+		
+		wait for 250ns;
+		
+		--Falsche Sequence 001
+		bcd_in <= '0';
+		wait for clk_period;
+		bcd_in <= '0';
+		wait for clk_period;
+		bcd_in <= '1';
+		wait for clk_period;
+		
+		wait for 500ns;
+		
+		--Sequence 1011
+		bcd_in <= '1';
+		wait for clk_period;
+		bcd_in <= '0';
+		wait for clk_period;
+		bcd_in <= '1';
+		wait for clk_period;
+		bcd_in <= '1';
+		wait for clk_period;
+
