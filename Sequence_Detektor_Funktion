@@ -15,17 +15,17 @@ end Sequence_Detector;
 
 architecture Behavioral of Sequence_Detector is
 	
-    -- Definition der Zustände der Zustandsmaschine
-		type state_type is (S0,S1,S2,S3,S4,SEND);
-		signal current_state, next_state : state_type;
+-- Definition der Zustände der Zustandsmaschine
+	type state_type is (S0,S1,S2,S3,S4,SEND);
+	signal current_state, next_state : state_type;
 		
-    timer_active : std_logic := 0;
-    timer_counter : integer := 0;
+    	signal timer_active : std_logic := '0';
+    	signal timer_counter : integer := 0;
 
-		signal serial_seq : std_logic_vector(3 downto 0);
-		signal serial_index : integer := 0;
+	signal serial_seq : std_logic_vector(3 downto 0);
+	signal serial_index : integer := 0;
 
-    constant pause_duration : integer := 200;
+    	constant pause_duration : integer := 200;
 
 --Funktion für die Zustandsmaschine
 function state_transition(bcd_in : std_logic_vector(3 downto 0); current_state : state_type) return state_type is
@@ -63,7 +63,7 @@ case current_state is
       when others =>
       	return S0;
       
-		end case;
+end case;
 end function;
 
 --Function für die Sequencedetektion
@@ -94,93 +94,57 @@ begin
   end if;
 end procedure;
 				
-
-
-
-
-
-
-
+--Funktion fue die serielle Ausgabe
+procedure serial_output_process(signal clk : in std_logic; signal serial_seq : std_logic_vector(3 downto 0); signal serial_index : inout integer; signal serial_out : out std_logic) is
 
 begin
-  
-  --Zustandsübergangsprocess (synchron mit dem Takt)
-  process(clk, reset)
-  begin
-    if reset = '1' then
-      current_state <= S0;
-		--bit_counter <= (others => '0');
-		bit_counter <= 0;
-		shift_register <= (others => '0');
-		--serial_out <= '0';
-		sending <= '0';
-    elsif rising_edge(clk) then
-    	current_state <= next_state;
-		
-			if start_serial = '1' and sending = '0' then
-				shift_register <= bcd_in;
-				sending <= '1';
-			end if;
-			
-			if sending = '1' then
-				serial_out <= shift_register(0);
-				shift_register <= '0' & shift_register(3 downto 1);
-				
-			if bit_counter = 3 then
-				bit_counter <= 0;				
-				sending <= '0';
-			else
-				bit_counter <= bit_counter + 1;
-			end if;
-			end if;
-			
-  	end if;
-  end process;
-  
-  --Nächster Zusatnd und Ausgabelogik (kombinatorisch)
-  process(current_state, bcd_in)
-  begin
-  
-	--Standardwerte setzen  
-  	next_state <= current_state;
-   detected <= '0';
-  
-    case current_state is
-      when S0 =>
-      	if bcd_in = "0011" then
-			 next_state <= S1;
-      	else
-          next_state <= S0;
-      	end if;
-      
-      when S1 =>
-      	if bcd_in = "0010" then
-			 next_state <= S2;
-      	else
-          next_state <= S0;
-      end if;
-      
-      when S2 =>
-      	if bcd_in = "0001" then
-			 next_state <= S3;
-      	else
-          next_state <= S0;
-      end if;
-      
-      when S3 =>
-      	if bcd_in = "0000" then
-			 next_state <= S4;
-      	else
-          next_state <= S0;
-      end if;
-      
-      when S4 =>
-      	detected <= '1';							--Sequenz 3210 erkannt
-			
-      when others =>
-      	next_state <= S0;							--Fehlerbehandlung: Zurück zum Start
-      
-		end case;
-	end process;
+	if rising_edge(clk) then
+		if serial_index < 4 then
+			serial_out <= serial_seq(serial_index);
+			serial_index <= serial_index +1;
+		else
+			serial_out <= '0';	--Ende der Ausgabe
+		end if;
+	end if;
+end procedure;
+
+-- FSM Process
+
+process(clk, reset)
+begin
+	if reset = '1' then
+		curren_state <= '0';
+	elsif rising_edge(clk) then
+		current_state <= state_transition(seq_in, current_state);
+	end if;
+end process;
+
+--Sequenzdetektion und Timer Process
+process(clk, reset)
+begin
+	if reset = '1' then
+		detected <= '0';
+		timer_active <= '0';
+	elsif rising_edge(clk) then
+		detected <= detect_sequence(current_state);
+		if detected = '1' then
+			timer_active <= '1';
+		end if;
+	end if;
+end process;
+
+--Timer Process aufrufen
+process(clk, reset)
+begin
+	timer_process(clk, reset, timer_active, timer_counter);
+end process;
+
+--Serielle Ausgabe Process
+process(clk)
+begin
+	if timer_active = '1' then
+		serial_output_process(clk, serial_seq, serial_index, serial_out);
+	end if;
+end process;
 
 end Behavioral;
