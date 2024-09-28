@@ -20,16 +20,16 @@ architecture Behavioral of Sequence_Detector is
 	type state_type is (S0,S1,S2,S3,S4);
 	signal current_state 		: state_type;
 	
-	signal timer_active 		: std_logic := '0';					-- Timer aktiv/inaktiv
-	signal timer_counter 		: integer := 0;						-- Timer-Zahler
+	signal timer_active 		: std_logic := '0';			-- Timer aktiv/inaktiv
+	signal timer_counter 		: integer := 0;				-- Timer-Zahler
 	
-	signal serial_seq 		: std_logic_vector(11 downto 0) := "000000000000";	-- Serielle Sequenz
-	signal serial_index 		: integer := 0;						-- Index fur serielle Ausgabe
-	signal sequence_detected 	: std_logic := '0';					-- Erkennungsflag
-	signal detected_flag 		: std_logic := '0';					-- Erkennungsflag
+	signal serial_seq 		: std_logic_vector(11 downto 0) := "000000000000"; -- Serielle Sequenz
+	signal serial_index 		: integer := 0;				-- Index fur serielle Ausgabe
+	signal sequence_detected 	: std_logic := '0';			-- Erkennungsflag
+	signal detected_flag 		: std_logic := '0';			-- Erkennungsflag
 
-   	constant clock_frequency 	: integer := 10;					-- Taktfrequenz 10Hz
-	constant pause_duration 	: integer := 10 * clock_frequency;			-- Pause fur Timer 10Sek
+   	constant clock_frequency 	: integer := 10;			-- Taktfrequenz 10Hz
+	constant pause_duration 	: integer := 10 * clock_frequency;	-- Pause fur Timer 10Sek
 
 --Funktion für Zustandsubergange
 function state_transition(bcd_in : std_logic_vector(3 downto 0); current_state : state_type) return state_type is
@@ -121,7 +121,7 @@ begin
 				if timer_counter < pause_duration then
 					timer_counter <= timer_counter +1;	-- Timer erhohen
 				else
-					timer_active <= '0';			-- Timer deaktivieren, wenn die Zeit erreicht wurde
+					timer_active <= '0';			-- Timer deaktivieren
 					sequence_detected <= '0';
 				end if;
 			end if;
