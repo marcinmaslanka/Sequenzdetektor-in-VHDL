@@ -1,16 +1,12 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.ALL;
+
+entity Sequence_Detektor_Funktion_tb is
+Eend Sequence_Detektor_Funktion_tb;
  
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---USE ieee.numeric_std.ALL;
+architecture behavior of Sequence_Detektor_Funktion_tb is 
  
-ENTITY Sequence_Detektor_Funktion_tb IS
-END Sequence_Detektor_Funktion_tb;
- 
-ARCHITECTURE behavior OF Sequence_Detektor_Funktion_tb IS 
- 
-    -- Component Declaration for the Unit Under Test (UUT)
+-- Component Declaration for the Unit Under Test (UUT)
  
     COMPONENT Sequence_Detector
     PORT(
@@ -20,24 +16,23 @@ ARCHITECTURE behavior OF Sequence_Detektor_Funktion_tb IS
          detected : OUT  std_logic;
          serial_out : OUT  std_logic
         );
-    END COMPONENT;
+END COMPONENT;
     
-
-   --Inputs
+--Inputs
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
    signal bcd_in : std_logic_vector(3 downto 0) := (others => '0');
 
- 	--Outputs
+--Outputs
    signal detected : std_logic;
    signal serial_out : std_logic;
 
-   -- Clock period definitions
+-- Clock period definitions
    constant clk_period : time := 100 ms;
  
 BEGIN
  
-	-- Instantiate the Unit Under Test (UUT)
+-- Instantiate the Unit Under Test (UUT)
    uut: Sequence_Detector PORT MAP (
           clk => clk,
           reset => reset,
@@ -46,7 +41,7 @@ BEGIN
           serial_out => serial_out
         );
 
-   -- Clock process definitions
+-- Clock process definitions
    clk_process :process
    begin
 		clk <= '0';
@@ -55,14 +50,12 @@ BEGIN
 		wait for clk_period/2;
    end process;
  
-
-   -- Stimulus process
+-- Stimulus process
    stim_proc: process
    begin		
-      -- hold reset state for 100 ns.
       -- insert stimulus here 
 		
-				reset <= '1';
+		reset <= '1';
 		wait for 200ms;
 		reset <= '0';
 		wait for 200ms;
@@ -125,9 +118,6 @@ BEGIN
 		bcd_in <= "0000";
 		wait for clk_period;
 		
-			
-		
 		wait;
    end process;
-
 END;
