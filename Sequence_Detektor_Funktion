@@ -6,11 +6,11 @@ use IEEE.std_logic_unsigned.all;
 -- Entitat fur den Sequenzdetektor
 entity Sequence_Detector is
 Port (
-  	clk 				: in std_logic;								-- Takteingang
-  	reset 			: in std_logic;								-- Reset-Eingang
+  	clk 			: in std_logic;					-- Takteingang
+  	reset 			: in std_logic;					-- Reset-Eingang
   	bcd_in 			: in std_logic_vector(3 downto 0);		-- Sequenzeingang
-  	detected 		: out std_logic;								-- Ausgang zur Anzeige
-	serial_out 		: out std_logic								-- serielle Ausgabe
+  	detected 		: out std_logic;				-- Ausgang zur Anzeige
+	serial_out 		: out std_logic					-- serielle Ausgabe
 	);
 end Sequence_Detector;
 
@@ -18,18 +18,18 @@ architecture Behavioral of Sequence_Detector is
 	
 	-- Definition der Zustände der Zustandsmaschine
 	type state_type is (S0,S1,S2,S3,S4);
-	signal current_state : state_type;
+	signal current_state 		: state_type;
 	
-	signal timer_active : std_logic := '0';											--	Timer aktiv/inaktiv
-	signal timer_counter : integer := 0;												-- Timer-Zahler
+	signal timer_active 		: std_logic := '0';					-- Timer aktiv/inaktiv
+	signal timer_counter 		: integer := 0;						-- Timer-Zahler
 	
-	signal serial_seq : std_logic_vector(11 downto 0) := "000000000000";		-- Serielle Sequenz
-	signal serial_index : integer := 0;													-- Index fur serielle Ausgabe
-	signal sequence_detected : std_logic := '0';										-- Erkennungsflag
-	signal detected_flag : std_logic := '0';											-- Erkennungsflag
+	signal serial_seq 		: std_logic_vector(11 downto 0) := "000000000000";	-- Serielle Sequenz
+	signal serial_index 		: integer := 0;						-- Index fur serielle Ausgabe
+	signal sequence_detected 	: std_logic := '0';					-- Erkennungsflag
+	signal detected_flag 		: std_logic := '0';					-- Erkennungsflag
 
-   constant clock_frequency : integer := 10;											-- Taktfrequenz 10Hz
-	constant pause_duration : integer := 10 * clock_frequency;					-- Pause fur Timer 10Sek
+   	constant clock_frequency 	: integer := 10;					-- Taktfrequenz 10Hz
+	constant pause_duration 	: integer := 10 * clock_frequency;			-- Pause fur Timer 10Sek
 
 --Funktion für Zustandsubergange
 function state_transition(bcd_in : std_logic_vector(3 downto 0); current_state : state_type) return state_type is
@@ -38,34 +38,34 @@ begin
 case current_state is
       when S0 =>
       	if bcd_in = "0011" then
-				return S1;					-- Ubergang zu Zustand S1, wenn "0011" erkannt
+		return S1;			-- Ubergang zu Zustand S1, wenn "0011" erkannt
       	else
-				return S0;					-- Bleibe in Zustand S0
+		return S0;			-- Bleibe in Zustand S0
       	end if;
-      
+
       when S1 =>
       	if bcd_in = "0010" then
-				return S2;					-- Ubergang zu Zustand S2 bei "0010"
+		return S2;			-- Ubergang zu Zustand S2 bei "0010"
       	else
-				return S0;					-- Ruckkehr zu S0
-			end if;
-      
+		return S0;			-- Ruckkehr zu S0
+	end if;
+
       when S2 =>
       	if bcd_in = "0001" then
-				return S3;					-- Ubergang zu Zustand S3 bei "0001"
+		return S3;			-- Ubergang zu Zustand S3 bei "0001"
       	else
-				return S0;					-- Ruckkehr zu S0
-			end if;
+		return S0;			-- Ruckkehr zu S0
+	end if;
       
       when S3 =>
       	if bcd_in = "0000" then
-				return S4;					-- Ubergang zu Zustand S4 bei "0000"
+		return S4;			-- Ubergang zu Zustand S4 bei "0000"
       	else
-				return S0;					-- Ruckkehr zu S0
-			end if;
+		return S0;			-- Ruckkehr zu S0
+	end if;
       
       when others =>
-      	return S0;						-- Standardzustand ist S0
+      	return S0;				-- Standardzustand ist S0
 end case;
 end function;
 
@@ -73,7 +73,7 @@ end function;
 function detect_sequence(current_state : state_type) return std_logic is
 begin
   if current_state = S4 then
-    return '1';    						--Sequence erkannt
+    return '1';    				--Sequence erkannt
   else
     return '0';
   end if;
@@ -95,12 +95,12 @@ begin
 	process(clk, reset)
 	begin
 		if reset = '1' then
-			detected_flag <= '0';					-- Erkennungsflag zurucksetzen
+			detected_flag <= '0';			-- Erkennungsflag zurucksetzen
 			sequence_detected <= '0';
-			timer_active <= '0';						-- Timer deaktivieren
-			timer_counter <= 0;						-- Timer Zahler zurucksetzen
-			serial_index <= 0;						-- Serialindex zurucksetzen
-			serial_out <= '0';						-- serielle Ausgabe auf '0' setzen
+			timer_active <= '0';			-- Timer deaktivieren
+			timer_counter <= 0;			-- Timer Zahler zurucksetzen
+			serial_index <= 0;			-- Serialindex zurucksetzen
+			serial_out <= '0';			-- serielle Ausgabe auf '0' setzen
 			serial_seq <= "000000000000"; 		-- serielle Sequenz initialisieren mit Null
 		elsif rising_edge(clk) then
 			
@@ -108,10 +108,10 @@ begin
 			if detect_sequence(current_state) = '1' and sequence_detected = '0'  then
 				sequence_detected <= '1';
 				detected_flag <= '1';
-				timer_active <= '1';					-- Timer aktivieren
-				timer_counter <= 0;					-- Timer zurucksetzen
-				serial_index <= 0;					-- Index fur serielle Ausgabe zurucksetzen
-				serial_seq <= "110010001010";		-- serielle Sequenz definieren
+				timer_active <= '1';		-- Timer aktivieren
+				timer_counter <= 0;		-- Timer zurucksetzen
+				serial_index <= 0;		-- Index fur serielle Ausgabe zurucksetzen
+				serial_seq <= "110010001010";	-- serielle Sequenz definieren
 			else
 				detected_flag <= '0';
 			end if;
@@ -119,9 +119,9 @@ begin
 			--Timer Steuerung
 			if timer_active = '1' then
 				if timer_counter < pause_duration then
-					timer_counter <= timer_counter +1;			-- Timer erhohen
+					timer_counter <= timer_counter +1;	-- Timer erhohen
 				else
-					timer_active <= '0';								-- Timer deaktivieren, wenn die Zeit erreicht wurde
+					timer_active <= '0';			-- Timer deaktivieren, wenn die Zeit erreicht wurde
 					sequence_detected <= '0';
 				end if;
 			end if;
