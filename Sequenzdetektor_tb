@@ -1,0 +1,123 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY Sequence_Detektor_Funktion_tb IS
+END Sequence_Detektor_Funktion_tb;
+ 
+ARCHITECTURE behavior OF Sequence_Detektor_Funktion_tb IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+    COMPONENT Sequence_Detector
+    PORT(
+         clk : IN  std_logic;
+         reset : IN  std_logic;
+         bcd_in : IN  std_logic_vector(3 downto 0);
+         detected : OUT  std_logic;
+         serial_out : OUT  std_logic
+        );
+    END COMPONENT;
+    
+   --Inputs
+   signal clk : std_logic := '0';
+   signal reset : std_logic := '0';
+   signal bcd_in : std_logic_vector(3 downto 0) := (others => '0');
+
+ 	--Outputs
+   signal detected : std_logic;
+   signal serial_out : std_logic;
+
+   -- Clock period definitions
+   constant clk_period : time := 100 ms;
+ 
+BEGIN
+ 
+	-- Instantiate the Unit Under Test (UUT)
+   uut: Sequence_Detector PORT MAP (
+          clk => clk,
+          reset => reset,
+          bcd_in => bcd_in,
+          detected => detected,
+          serial_out => serial_out
+        );
+
+   -- Clock process definitions
+   clk_process :process
+   begin
+		clk <= '0';
+		wait for clk_period/2;
+		clk <= '1';
+		wait for clk_period/2;
+   end process;
+ 
+   -- Stimulus process
+   stim_proc: process
+   begin		
+	
+      -- insert stimulus here 
+		
+		reset <= '1';
+		wait for 200ms;
+		reset <= '0';
+		wait for 200ms;
+		
+		--Sequence 3210
+		bcd_in <= "0011";
+		wait for clk_period;
+		bcd_in <= "0010";
+		wait for clk_period;
+		bcd_in <= "0001";
+		wait for clk_period;
+		bcd_in <= "0000";
+		wait for clk_period;
+		
+		wait for 3000ms;
+		
+		--Sequence 3210
+		bcd_in <= "0011";
+		wait for clk_period;
+		bcd_in <= "0010";
+		wait for clk_period;
+		bcd_in <= "0001";
+		wait for clk_period;
+		bcd_in <= "0000";
+		wait for clk_period;
+		
+		wait for 3000ms;
+		
+		--Sequence 3210
+		bcd_in <= "0011";
+		wait for clk_period;
+		bcd_in <= "0010";
+		wait for clk_period;
+		bcd_in <= "0001";
+		wait for clk_period;
+		bcd_in <= "0000";
+		wait for clk_period;
+		
+		wait for 3000ms;
+		
+		--Sequence 3210
+		bcd_in <= "0011";
+		wait for clk_period;
+		bcd_in <= "0010";
+		wait for clk_period;
+		bcd_in <= "0001";
+		wait for clk_period;
+		bcd_in <= "0000";
+		wait for clk_period;
+		
+		wait for 3000ms;
+		
+		--Sequence 3210
+		bcd_in <= "0011";
+		wait for clk_period;
+		bcd_in <= "0010";
+		wait for clk_period;
+		bcd_in <= "0001";
+		wait for clk_period;
+		bcd_in <= "0000";
+		wait for clk_period;
+		
+		wait;
+   end process;
+END;
