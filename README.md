@@ -64,19 +64,18 @@ yosys
 
 ### 🧙‍♂️ 2. In the Yosys shell, enter:
 ```
-ghdl --std=08 -i sd.vhdl
-ghdl --std=08 -a sd.vhdl
-ghdl --std=08 --out=verilog sd -e sd > sd.v
+ghdl -a sd.vhdl
+ghdl synth --out=verilog sd > sd.v
 ```
 
 This creates a Verilog equivalent of the VHDL module in sd.v.
 
 ### 📁 Files
 File | Description
-sd.vhdl | Main sequence detector (VHDL)
-sd_tb.vhdl | Testbench for simulation (user-provided)
-sd.vcd | Simulation waveform for GTKWave
-sd.v | Generated Verilog file
+- sd.vhdl | Main sequence detector (VHDL)
+- sd_tb.vhdl | Testbench for simulation (user-provided)
+- sd.vcd | Simulation waveform for GTKWave
+- sd.v | Generated Verilog file
 
 ### 📜 License
 MIT License – Feel free to use, modify, and share.
