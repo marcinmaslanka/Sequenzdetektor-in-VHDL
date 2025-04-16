@@ -97,41 +97,37 @@ config.json
 2. Run the Flow
 From your project directory:
 
-bash
-Kopieren
-Bearbeiten
+```bash
 openlane config.json
+```
 After ~2 minutes, the flow will be completed.
 
-🔍 How to View Results
+### 🔍 How to View Results
 🔌 Power Report
-bash
-Kopieren
-Bearbeiten
+```bash
 /headless/OpenLane/designs/sd/runs/RUN_2025-04-13_08-27-15/54-openroad-stapostpnr/nom_tt_025C_1v80/power.rpt
+```
 ⏱️ Static Timing Analysis (STA)
-bash
-Kopieren
-Bearbeiten
+```bash
 /headless/OpenLane/designs/sd/runs/RUN_2025-04-16_20-31-21/54-openroad-stapostpnr/nom_tt_025C_1v80/sta.log
+```
+
 📐 Core and Die Area
-bash
-Kopieren
-Bearbeiten
+```bash
 /headless/OpenLane/designs/sd/runs/RUN_2025-04-13_08-27-15/13-openroad-floorplan/openroad-floorplan.log
+```
+
 🧱 Layout (GDS File)
-bash
-Kopieren
-Bearbeiten
+```bash
 cd /headless/OpenLane/designs/sd/runs/RUN_2025-04-13_08-27-15/final/gds
 klayout sd.gds
+```
+
 🔥 Heatmap (GUI)
-bash
-Kopieren
-Bearbeiten
+```bash
 cd /headless/OpenLane/designs/sd/runs/RUN_2025-04-13_08-27-15/final/odb
 openroad -gui
-
+```
 
 ---
 
