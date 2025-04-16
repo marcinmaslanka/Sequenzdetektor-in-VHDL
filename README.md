@@ -69,13 +69,47 @@ ghdl synth --out=verilog sd > sd.v
 ```
 
 This creates a Verilog equivalent of the VHDL module in sd.v.
+I recomend you to make another Directory for the Verilog files like this:
+/foss/designs/SKY/sd/verilog
+Make also a test bench for your Verilog Code and put it into the same folder.
 
-### 📁 Files
-File | Description
-- sd.vhdl | Main sequence detector (VHDL)
-- sd_tb.vhdl | Testbench for simulation (user-provided)
-- sd.vcd | Simulation waveform for GTKWave
-- sd.v | Generated Verilog file
+And now you can verify the converted Verilog Code:
+```
+iverilog -o sd_tb.vvp sd_tb.v sd.v
+vvp sd_tb.vvp
+gtkwave sd_tb.vcd
+```
+This alows you to check if ther are any ambiguity between VHDL and Verilog Codes.
 
-### 📜 License
-MIT License – Feel free to use, modify, and share.
+If not you can Proceed with Openlane 2
+
+🏗️ Synthesis and Layout with OpenLane2
+1. Create Project Directory
+mkdir -p /headless/OpenLane/designs/sd
+Copy these files into the new directory:
+
+sd.v
+config.json
+2. Run the Flow
+From your Project directory:
+
+openlane config.json
+... After 2 minutes, the flow will be completed.
+
+🔍 How to View Results
+🔌 Power Report
+/headless/OpenLane/designs/not/runs/RUN_2025-04-13_08-27-15/54-openroad-stapostpnr/nom_tt_025C_1v80/power.rpt
+ Static Timing Analysis
+ /headless/OpenLane/designs/sd/runs/RUN_2025-04-16_20-31-21/54-openroad-stapostpnr/nom_tt_025C_1v80/sta.log
+📐 Core and Die Area
+/headless/OpenLane/designs/not/runs/RUN_2025-04-13_08-27-15/13-openroad-floorplan/openroad-floorplan.log
+🧱 Layout (GDS File)
+cd /headless/OpenLane/designs/not/runs/RUN_2025-04-13_08-27-15/final/gds
+klayout not.gds
+🔥 Heatmap (GUI)
+cd /headless/OpenLane/designs/not/runs/RUN_2025-04-13_08-27-15/final/odb
+openroad -gui
+
+---
+
+Feel free to use, modify, and share.
